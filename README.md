@@ -1,5 +1,7 @@
 PowerShell OneGet Gist Provider
 -
+**Gist-as-a-package**
+
 This PowerShell module implements the [OneGet PowerShell provider SDK]( http://oneget.org/provider-ps.zip).
 
 
