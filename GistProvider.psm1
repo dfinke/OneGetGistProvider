@@ -1,3 +1,5 @@
+# find-package -providername gist -source dfinke
+
 $targetGistPath = "C:\TryOneGet"
 $JSONFileName = "$($targetGistPath)\OneGetData.json"
 
@@ -11,6 +13,7 @@ function Register-PackageSource {
         [bool] $trusted
     )  
 	write-debug "In GistProvider - Register-PackageSource"
+	write-debug "In GistProvider - Register-PackageSource name: {0}" $name
 }
 
 <# 
@@ -35,12 +38,14 @@ function Find-Package {
         [string] $maximumVersion
     )
 
-	write-debug "In GistProvider - Find-Package"
+	write-debug "In GistProvider - Find-Package"	
+	write-debug "In GistProvider - Find-Package PackageSources: {0}" $request.PackageSources.Count
+	write-debug "In GistProvider - Find-Package request keys: {0}" ($request.Keys|out-string)
 	
-	write-debug ($names|out-string)	
-	
+	#write-debug ($names|out-string)	
+	$User = $request.PackageSources[0]
 	$(
-	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/dfinke/gists")) {
+	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($User)/gists")) {
 		
             $FileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
             #write-debug "In GistProvider - Find-Package $FileName"
@@ -116,8 +121,17 @@ function Get-PackageProviderName {
 function Resolve-PackageSource { 
     param()
    
-    write-debug "In GistProvider - Resolve-PackageSources"
-    write-debug "Done In GistProvider - Get-PackageSources"
+    write-debug "In GistProvider - Resolve-PackageSources"    
+    write-debug "In GistProvider - Resolve-PackageSources ps: {0}" $request.PackageSources[0]
+    write-debug "In GistProvider - Resolve-PackageSources gs: {0}" $request.GetSources().count
+    #write-debug "In GistProvider - Resolve-PackageSources keys: {0}" ($request|gm|out-string)
+    
+    $user = $request.PackageSources[0]
+    write-debug "In GistProvider - Resolve-PackageSources gist: {0}" "https://api.github.com/users/$($user)/gists"
+    
+    New-Object Microsoft.OneGet.MetaProvider.PowerShell.PackageSource -ArgumentList $user,"https://api.github.com/users/$($user)/gists",$false,$false,$true
+    
+    write-debug "Done In GistProvider - Get-PackageSources"    
 }
 
 function Initialize-Provider { 
@@ -246,7 +260,7 @@ function Get-DynamicOptions {
             #write-Output (New-DynamicOption $category  "color" String $false @("red","green","blue"))
             #write-Output (New-DynamicOption $category  "flavor" String $false @("chocolate","vanilla","peach"))
             
-            New-DynamicOption -Category $category -Name "GithubUser" -ExpectedType StringArray -isRequired $false
+            #New-DynamicOption -Category $category -Name "GithubUser" -ExpectedType StringArray -isRequired $false
         }
 
         Source {
