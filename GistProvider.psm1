@@ -43,8 +43,10 @@ function Find-Package {
 	write-debug "In GistProvider - Find-Package request keys: {0}" ($request.Keys|out-string)
 	
 	#write-debug ($names|out-string)	
-	$User = $request.PackageSources[0]
-	$(
+
+	#$User = $request.PackageSources[0]
+
+	$(foreach($User in ($request.PackageSources)) {	
 	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($User)/gists")) {
 		
 		    $FileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
@@ -73,7 +75,7 @@ function Find-Package {
 			    $SwidFindCache.$rawUrl
                    }
    	    }
-	) | Where {$_.Name -match $names}
+	})| Where {$_.Name -match $names} 
 }
 
 function Find-PackageByFile { 
@@ -128,12 +130,11 @@ function Resolve-PackageSource {
     write-debug "In GistProvider - Resolve-PackageSources gs: {0}" $request.GetSources().count
     #write-debug "In GistProvider - Resolve-PackageSources keys: {0}" ($request|gm|out-string)
     
-    $user = $request.PackageSources[0]
-    write-debug "In GistProvider - Resolve-PackageSources gist: {0}" "https://api.github.com/users/$($user)/gists"
-    
-    New-Object Microsoft.OneGet.MetaProvider.PowerShell.PackageSource -ArgumentList $user,"https://api.github.com/users/$($user)/gists",$false,$false,$true
-    
-    write-debug "Done In GistProvider - Get-PackageSources"    
+    foreach($user in @($request.PackageSources)) {
+        write-debug "In GistProvider - Resolve-PackageSources gist: {0}" "https://api.github.com/users/$($user)/gists"
+        New-Object Microsoft.OneGet.MetaProvider.PowerShell.PackageSource -ArgumentList $user,"https://api.github.com/users/$($user)/gists",$false,$false,$true
+        write-debug "Done In GistProvider - Get-PackageSources"    
+    }
 }
 
 function Initialize-Provider { 
