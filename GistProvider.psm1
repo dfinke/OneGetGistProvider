@@ -47,30 +47,32 @@ function Find-Package {
 	$(
 	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($User)/gists")) {
 		
-            $FileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
-            #write-debug "In GistProvider - Find-Package $FileName"
-            
-            #$user=$request.YieldDynamicOption("GithubUser", "String", $true)
-            #write-debug ($request|gm|out-string)
-            
-            $rawUrl = ($gist.files).($FileName).raw_url            
-            
-            $SWID=@{            
-                fastPackageReference = $rawUrl
-                name = $FileName
-                version ="1.0"
-                versionScheme="semver"
-                source=$rawUrl
-                summary=($gist.description).tostring()
-                searchKey=$FileName.split('.')[0]
-            }            
-            
-            if(!$SwidFindCache.ContainsKey($rawUrl)) {            
-            	$SwidFindCache.$rawUrl=New-SoftwareIdentity @SWID
-            }
-            
-            $SwidFindCache.$rawUrl
-	}
+		    $FileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
+		    #write-debug "In GistProvider - Find-Package $FileName"
+
+		    #$user=$request.YieldDynamicOption("GithubUser", "String", $true)
+		    #write-debug ($request|gm|out-string)
+
+		    $rawUrl = ($gist.files).($FileName).raw_url            
+
+		    if($rawUrl) { 
+			    $SWID=@{            
+				fastPackageReference = $rawUrl
+				name = $FileName
+				version ="1.0"
+				versionScheme="semver"
+				source=$rawUrl
+				summary=($gist.description).tostring()
+				searchKey=$FileName.split('.')[0]
+			    }            
+
+			    if(!$SwidFindCache.ContainsKey($rawUrl)) {            
+				$SwidFindCache.$rawUrl=New-SoftwareIdentity @SWID
+			    }
+
+			    $SwidFindCache.$rawUrl
+                   }
+   	    }
 	) | Where {$_.Name -match $names}
 }
 
