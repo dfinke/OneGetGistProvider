@@ -1,10 +1,19 @@
-# find-package -providername gist -source dfinke
-
 $targetGistPath = "C:\TryOneGet"
 $JSONFileName = "$($targetGistPath)\OneGetData.json"
 
 $SwidFindCache    = @{}
 $SwidInstallCache = @{}
+
+#function Find-Gist {
+#    param(
+#        [Parameter(ValueFromPipeLine)]
+#        [string[]]$User
+#    )
+#
+#    Process {
+#        Find-Package -ProviderName GistProvider -Source $User
+#    }
+#}
 
 function Register-PackageSource { 
     param(
@@ -63,7 +72,7 @@ function Find-Package {
 				name = $FileName
 				version ="1.0"
 				versionScheme="semver"
-				source=$rawUrl
+				source=$User
 				summary=($gist.description).tostring()
 				searchKey=$FileName.split('.')[0]
 			    }            
@@ -119,7 +128,7 @@ function Get-InstalledPackage {
 
 function Get-PackageProviderName { 
     param()
-    return "Gist"
+    return "GistProvider"
 }
 
 function Resolve-PackageSource { 
