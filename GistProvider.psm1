@@ -1,4 +1,4 @@
-$targetGistPath = "C:\TryOneGet"
+$targetGistPath = "$env:LOCALAPPDATA\OneGet\Gist"
 $JSONFileName = "$($targetGistPath)\OneGetData.json"
 
 $SwidFindCache    = @{}
@@ -14,6 +14,22 @@ $SwidInstallCache = @{}
 #        Find-Package -ProviderName GistProvider -Source $User
 #    }
 #}
+
+function Get-GistAuthHeader {
+    param(
+    	[pscredential]$Credential
+    )
+    
+    #if(!$Global:cred) { $Global:cred = Get-Credential ''}
+
+    $authInfo = "{0}:{1}" -f $Credential.UserName, $Credential.GetNetworkCredential().Password
+    $authInfo = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($authInfo))
+
+    @{
+        "Authorization" = "Basic " + $authInfo
+        "Content-Type" = "application/json"
+    }
+}
 
 function Register-PackageSource { 
     param(
@@ -50,13 +66,17 @@ function Find-Package {
 	write-debug "In GistProvider - Find-Package"	
 	write-debug "In GistProvider - Find-Package PackageSources: {0}" $request.PackageSources.Count
 	write-debug "In GistProvider - Find-Package request keys: {0}" ($request.Keys|out-string)
+	#write-debug "In GistProvider - Find-Package request credential: {0}" ($request.Credential|out-string)
+	write-debug "In GistProvider - Find-Package request username: {0}" ($request.Username|out-string)
+	write-debug "In GistProvider - Find-Package request password: {0}" ($request.Password|out-string)
 	
 	#write-debug ($names|out-string)	
 
 	#$User = $request.PackageSources[0]
-
+	if($request.Credential) { $Header = (Get-GistAuthHeader $request.Credential) }
+	
 	$(foreach($User in ($request.PackageSources)) {	
-	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($User)/gists")) {
+	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($User)/gists" -Header $Header)) {
 		
 		    $FileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
 		    #write-debug "In GistProvider - Find-Package $FileName"
