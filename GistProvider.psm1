@@ -1,6 +1,6 @@
 $Providername = "GistProvider"
 $GistPath     = "$env:LOCALAPPDATA\OneGet\Gist"
-$CSVFilename = "$($GistPath)\OneGetData.csv"
+$CSVFilename  = "$($GistPath)\OneGetData.csv"
 
 function Get-GistAuthHeader {
     param(
