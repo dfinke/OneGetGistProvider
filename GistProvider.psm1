@@ -83,9 +83,7 @@ function Find-Package {
 function Install-Package { 
     param(
         [string] $fastPackageReference
-    )    
-    	if(!$fastPackageReference -Or $fastPackageReference.Trim().Length -eq 0) {return}
-    	
+    )   	
     	$rawUrl = ($fastPackageReference|ConvertFrom-Json).fastpackagereference
 	
 	write-debug "In $($ProviderName) - Install-Package - {0}" $rawUrl
@@ -94,8 +92,11 @@ function Install-Package {
 	
 	$psFileName = Split-Path -Leaf $rawUrl
 	$targetOut = "$($GistPath)\$($psFileName)"
-	Invoke-RestMethod -Uri $rawUrl | Set-Content -Encoding Ascii $targetOut
+	
+	Invoke-RestMethod -Uri $rawUrl | 
+	    Set-Content -Encoding Ascii $targetOut
 	
 	## Update the catalog of gists installed	
-	($fastPackageReference | ConvertFrom-Json) | Export-Csv -Path $CSVFilename -Append -NoTypeInformation -Encoding ASCII	
+	($fastPackageReference | ConvertFrom-Json) |
+	     Export-Csv -Path $CSVFilename -Append -NoTypeInformation -Encoding ASCII	
 }
