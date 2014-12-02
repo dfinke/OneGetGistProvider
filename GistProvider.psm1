@@ -52,7 +52,7 @@ function Find-Package {
 	    
 	    if($request.Credential) { $Header = (Get-GistAuthHeader $request.Credential) }
 	    
-	    write-debug "In $($ProviderName)- Find-Package {0}" $(help New-SoftwareIdentity | out-string)
+	    #write-debug "In $($ProviderName)- Find-Package {0}" $(help New-SoftwareIdentity | out-string)
 	    ForEach($gist in (Invoke-RestMethod "https://api.github.com/users/$($Name)/gists" -Header $Header)) {
 	    	
 	    	if($request.IsCancelled){break}
