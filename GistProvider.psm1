@@ -96,7 +96,39 @@ function Install-Package {
 	Invoke-RestMethod -Uri $rawUrl | 
 	    Set-Content -Encoding Ascii $targetOut
 	
-	## Update the catalog of gists installed	
+	## Update the catalog of gists installed	 
 	($fastPackageReference | ConvertFrom-Json) |
 	     Export-Csv -Path $CSVFilename -Append -NoTypeInformation -Encoding ASCII	
+}
+
+function ConvertTo-HashTable {
+    param(
+        [Parameter(ValueFromPipeline)]
+        $Data
+    )
+
+    process {
+        if(!$Fields) {            
+            $Fields=($Data|Get-Member -MemberType NoteProperty ).Name
+        }
+        
+        $h=[Ordered]@{}
+        foreach ($Field in $Fields)
+        {
+            $h.$Field = $Data.$Field                        
+        }
+        $h
+    }
+}
+
+function Get-InstalledPackage {
+    param()
+    
+    $installedPackages = Import-Csv  "$($GistPath)\OneGetData.csv"
+    write-debug "In $($ProviderName) - Get-InstalledPackage {0}" @($installedPackages).Count
+    
+    foreach ($item in ($installedPackages | ConvertTo-HashTable))
+    {    
+        New-SoftwareIdentity @item
+    }    
 }
