@@ -1,4 +1,4 @@
-$Providername = "GistProvider"
+$Providername = "Gist"
 $GistPath     = "$env:LOCALAPPDATA\OneGet\Gist"
 $CSVFilename  = "$($GistPath)\OneGetData.csv"
 
