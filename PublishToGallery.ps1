@@ -4,7 +4,7 @@ $p = @{
     NuGetApiKey = $NuGetApiKey 
     LicenseUri = "https://github.com/dfinke/OneGetGistProvider/blob/master/LICENSE" 
     Tag = "Gist","Github","OneGet""Provider"
-    ReleaseNote = "Gist-as-a-Package - OneGet PowerShell Provider to interop with Github Gists"
+    ReleaseNote = "-VERBOSE displays location of installed package"
     ProjectUri = "https://github.com/dfinke/OneGetGistProvider"
 }
 

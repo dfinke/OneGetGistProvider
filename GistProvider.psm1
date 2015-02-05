@@ -92,7 +92,8 @@ function Install-Package {
 	
 	$psFileName = Split-Path -Leaf $rawUrl
 	$targetOut = "$($GistPath)\$($psFileName)"
-	
+
+	write-verbose "Package intstall location {0}" $targetOut
 	Invoke-RestMethod -Uri $rawUrl | 
 	    Set-Content -Encoding Ascii $targetOut
 	
