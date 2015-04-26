@@ -32,7 +32,7 @@ function Resolve-PackageSource {
     	
     	write-debug "In $($ProviderName)- Resolve-PackageSources gist: {0}" $Location
 
-        New-Object Microsoft.OneGet.MetaProvider.PowerShell.PackageSource $Name,$Location,$IsTrusted,$IsRegistered,$IsValidated
+        New-PackageSource $Name $Location $IsTrusted $IsRegistered $IsValidated
     }        
 }
 
